@@ -12,4 +12,4 @@ md %systemdrive%
 echo Changed System Drive from %oldsystemdrive% to %systemdrive%
 echo Loading Tauser Store...
 set useporti=1
-call %cd%\PORTI\Store\Store.bat
+call %cd%\PORTI\Store.bat
