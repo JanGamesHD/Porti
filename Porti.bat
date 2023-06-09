@@ -64,14 +64,18 @@ cls
 echo We will now download the following:
 echo 1. Tauser Store
 echo 2. Tauser Store patcher
+echo 3. Porti Updater
 pause
 cls
-title Porti: Downloading... (1/2)
-echo Downloading... (1/2)
+title Porti: Downloading... (1/3)
+echo Downloading... (1/3)
 Porti\wget.exe https://raw.githubusercontent.com/FBW81C/TauserStore/main/Store.bat -O Porti\Store.bat
-title Porti: Downloading... (2/2)
-echo Downloading... (2/2)
+title Porti: Downloading... (2/3)
+echo Downloading... (2/3)
 Porti\wget.exe https://raw.githubusercontent.com/JanGamesHD/Porti/main/Store_loader.bat -O Porti\Store_loader.bat
+title Porti: Downloading... (3/3)
+echo Downloading.... (3/3)
+Porti\wget.exe https://raw.githubusercontent.com/JanGamesHD/Porti/main/Updater.bat -O Porti\Updater.bat
 echo Done!
 pause
 :setupcomplete
