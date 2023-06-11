@@ -1,17 +1,20 @@
 @echo off
+if exist \Porti\Porti.bat goto loadporti
+:boot
+if not "%cd%"=="%cd: =%" goto spacewarning
 echo Github: https://github.com/JanGamesHD/Porti
 :reload
 title Porti: Loading...
 set curcd=%cd%
 cd \
 set acd=%cd%
-cd %curcd%
+cd "%curcd%"
 set bananamode=0
-if %cd%==%acd% set bananamode=1
+if "%cd%"=="%acd%" set bananamode=1
 if %bananamode%==0 if exist wget.exe set portiworkdir=%cd%
 if %bananamode%==0 if exist Porti\wget.exe set portiworkdir=%cd%\Porti
 if %bananamode%==1 if exist wget.exe set portiworkdir=%cd%
-if %bananamode%==1 if exist Porti\wget.exe set portiworkdir=%cd%Porti
+if %bananamode%==1 if exist Porti\wget.exe set portiworkdir=%cd%\Porti
 echo bananamode: %bananamode%
 echo Welcome to Porti!
 echo Version 1.0
@@ -319,3 +322,25 @@ echo You can also type the path, but make sure to add quotation marks at the sta
 echo a path with spaces
 pause
 goto menu
+
+:spacewarning
+cls
+echo Porti is installed in a directory which contains spaces.
+echo Please move Porti into a different location which does not contain any spaces.
+echo We can automatically install Porti in \Porti
+echo Do you want to install Porti in \Porti? (y/n)
+set /p opt=Opt: 
+if %opt%==y goto installinroot
+if %opt%==n exit
+goto spacewarning
+
+:installinroot
+md \Porti
+copy "%~f0" \Porti\Porti.bat
+if not exist \Porti\Porti.bat goto error1
+goto reload
+
+:loadporti
+cd \Porti
+call Porti.bat
+exit
