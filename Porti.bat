@@ -19,7 +19,7 @@ if %bananamode%==1 set curcd=%cd::\=:%
 if %bananamode%==1 set acd=%cd::\=:%
 echo bananamode: %bananamode%
 echo Welcome to Porti!
-echo Version 1.0
+echo Version 1.3
 if not exist Porti md Porti
 if not exist Porti\Applications md Porti\Applications
 if not exist Porti\setupcomplete.sys goto setup
