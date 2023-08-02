@@ -14,7 +14,9 @@ if "%cd%"=="%acd%" set bananamode=1
 if %bananamode%==0 if exist wget.exe set portiworkdir=%cd%
 if %bananamode%==0 if exist Porti\wget.exe set portiworkdir=%cd%\Porti
 if %bananamode%==1 if exist wget.exe set portiworkdir=%cd%
-if %bananamode%==1 if exist Porti\wget.exe set portiworkdir=%cd%\Porti
+if %bananamode%==1 if exist Porti\wget.exe set portiworkdir=%cd%Porti
+if %bananamode%==1 set curcd=%cd::\=:%
+if %bananamode%==1 set acd=%cd::\=:%
 echo bananamode: %bananamode%
 echo Welcome to Porti!
 echo Version 1.0
@@ -144,7 +146,7 @@ set /p app=Opt:
 if %app%==a goto installzip
 if %app%==.. goto menu
 :loadapplication
-echo Loading Details ..., please wait!
+echo Loading Details ... please wait!
 if not exist Porti\Applications\%app%\name.sys goto applicationnotfound
 set /p applicationname=<Porti\Applications\%app%\name.sys
 cls
@@ -258,7 +260,9 @@ cls
 echo Here you can install a 3rd party zip file.
 echo Please drag and Drop the ZIP file in this CMD window.
 set /p file=File: 
-if not exist %file% goto zipfilenotfound
+
+
+if not exist %file% goto notfoundfileforinstall
 echo Searching for an empty Application space...
 set current=0
 :searchappspace
@@ -314,7 +318,9 @@ echo Downloading Porti Text...
 Porti\wget https://raw.githubusercontent.com/JanGamesHD/Porti/main/portitext.sys -O Porti\portitext.sys
 goto menu
 
+:notinstallfound
 :zipfilenotfound
+:notfoundfileforinstall
 cls
 echo Unable to find file: %file%
 echo Please use drag and Drop to make sure the right path has been entered.
