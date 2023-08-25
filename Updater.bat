@@ -10,6 +10,8 @@ rem echo Press any key to search for Updates.
 rem pause >NUl
 echo Generating Hash: Porti.bat
 certutil -hashfile Porti.bat MD5 | findstr /V ":" >Porti\localporti.sys
+set /p localporti=<Porti\localporti.sys
+echo %localporti: =%>Porti\localporti.sys
 echo Downloading remote Hash...
 goto downloadremotehash
 
@@ -52,6 +54,8 @@ echo Downloading Porti ...
 Porti\wget.exe https://raw.githubusercontent.com/JanGamesHD/Porti/main/Porti.bat -O Porti\Porti.update --no-cache
 echo Getting Hash...
 certutil -hashfile Porti\Porti.update MD5 | findstr /V ":" >Porti\update.hash
+set /p updatehash=<Porti\update.hash
+echo %updatehash: =%>Porti\update.hash
 echo Loading Hash into memory...
 set /p updatehash=<Porti\update.hash
 echo Local Hash: %localversion%
