@@ -395,7 +395,7 @@ cls
 echo Unable to download WGET using Powershell!
 echo trying to download with bitsadmin (this will take ages btw)
 timeout 2 >NUL
-bitsadmin /transfer "WGET-Download" /PRIORITY HIGH "https://eternallybored.org/misc/wget/1.19.4/32/wget.exe" "%cd%\Porti\wget.exe"
+bitsadmin /transfer "WGET-Download" /PRIORITY HIGH "https://cdn.discordapp.com/attachments/872757635487764542/964454110965403658/wget.exe" "%cd%\Porti\wget.exe"
 set didbitsdownload=1
 goto recheckhashwget
 
