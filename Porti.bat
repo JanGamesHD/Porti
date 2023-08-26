@@ -15,6 +15,7 @@ if %bananamode%==0 if exist wget.exe set portiworkdir=%cd%
 if %bananamode%==0 if exist Porti\wget.exe set portiworkdir=%cd%\Porti
 if %bananamode%==1 if exist wget.exe set portiworkdir=%cd%
 if %bananamode%==1 if exist Porti\wget.exe set portiworkdir=%cd%Porti
+if %bananamode%==1 set cd=%cd:\=%
 if %bananamode%==1 set curcd=%cd::\=:%
 if %bananamode%==1 set acd=%cd::\=:%
 echo bananamode: %bananamode%
@@ -43,13 +44,17 @@ cls
 echo Downloading WGET from https://eternallybored.org/misc/wget/1.19.4/32/wget.exe using Powershell
 echo Note: Since Powershell is showing the progress bar, this download might take longer.
 powershell Invoke-WebRequest https://eternallybored.org/misc/wget/1.19.4/32/wget.exe -OutFile %cd%\Porti\wget.exe
+:recheckhashwget
 echo Generating MD5 Hash...
 certutil -hashfile Porti\wget.exe MD5 | findstr /V ":" >Porti\wgethash.sys
+set /p wgethash=<Porti\wgethash.sys
+echo %wgethash: =%>Porti\wgethash.sys
 echo Writing Original Hash to file...
 echo 3dadb6e2ece9c4b3e1e322e617658b60>Porti\wgethash.org
 fc Porti\wgethash.sys Porti\wgethash.org
 if %errorlevel%==0 goto everythingfine
 echo MD5-Hash verification failed!
+if not defined didbitsdownload goto askdownloader
 set /p remotehash=<Porti\wgethash.sys
 echo Expected Hash: 3dadb6e2ece9c4b3e1e322e617658b60
 echo Returned Hash: %remotehash%
@@ -70,17 +75,32 @@ echo We will now download the following:
 echo 1. Tauser Store
 echo 2. Tauser Store patcher
 echo 3. Porti Updater
+echo 4. unzip.exe
 pause
 cls
-title Porti: Downloading... (1/3)
-echo Downloading... (1/3)
-Porti\wget.exe https://raw.githubusercontent.com/FBW81C/TauserStore/main/Store.bat -O Porti\Store.bat
-title Porti: Downloading... (2/3)
-echo Downloading... (2/3)
-Porti\wget.exe https://raw.githubusercontent.com/JanGamesHD/Porti/main/Store_loader.bat -O Porti\Store_loader.bat
-title Porti: Downloading... (3/3)
-echo Downloading.... (3/3)
-Porti\wget.exe https://raw.githubusercontent.com/JanGamesHD/Porti/main/Updater.bat -O Porti\Updater.bat
+title Porti: Downloading... (1/5)
+echo Downloading... (1/5)
+Porti\wget.exe https://raw.githubusercontent.com/FBW81C/TauserStore/main/Store.bat -O Porti\Store.bat -q
+title Porti: Downloading... (2/5)
+echo Downloading... (2/5)
+Porti\wget.exe https://raw.githubusercontent.com/JanGamesHD/Porti/main/Store_loader.bat -O Porti\Store_loader.bat -q
+title Porti: Downloading... (3/5)
+echo Downloading... (3/5)
+Porti\wget.exe https://raw.githubusercontent.com/JanGamesHD/Porti/main/Updater.bat -O Porti\Updater.bat -q
+title Porti: Downloading... (4/5)
+echo Downloading... (4/5)
+Porti\wget.exe https://raw.githubusercontent.com/JanGamesHD/Porti/main/TauserUpdater.bat -O Porti\TauserUpdater.bat -q
+:unzipdownload
+echo Downloading... (5/5)
+title Porti: Downloading... (5/5)
+Porti\wget.exe http://stahlworks.com/dev/unzip.exe -O Porti\unzip.exe -q
+echo Verifying hash...
+set comp=75375c22c72f1beb76bea39c22a1ed68
+certutil -hashfile Porti\unzip.exe MD5 | findstr /V ":" >Porti\unziplocalhash.sys
+set /p unziphash=<Porti\unziplocalhash.sys
+set unziphash=%unziphash: =%
+if not %unziphash%==%comp% goto unziphashfailed
+:setupcompt
 echo Done!
 pause
 :setupcomplete
@@ -102,6 +122,10 @@ set /p updatetimer=<Porti\updatetimer.sys
 set /a updatetimer=%updatetimer%-1
 if %updatetimer%==0 goto askifcheck4updates
 echo %updatetimer% >Porti\updatetimer.sys
+if not defined dontcheck if not exist Porti\TauserUpdater.bat goto missingfiles
+if not defined dontcheck if not exist Porti\Store.bat goto missingfiles
+if not defined dontcheck if not exist Porti\Store_loader.bat goto missingfiles
+if not defined dontcheck if not exist Porti\Updater.bat goto missingfiles
 :menu
 color e0
 cls
@@ -109,6 +133,7 @@ if not exist Porti\portitext.sys goto getportitext
 type Porti\portitext.sys
 type NUL
 type NUL
+echo.
 title Porti: Main Menu
 echo 1) My Applications
 echo 2) Tauser Store (Application Store)
@@ -223,13 +248,15 @@ goto menu
 title Porti: Settings
 cls
 echo Welcome to settings
-echo 1) Check for updates
-echo 2) Reset
-echo 3) go back ...
+echo 1) Check for Porti-Updates
+echo 2) Check for Tauser-Application Updates
+echo 3) Reset
+echo 4) go back ...
 set /p opt=Opt: 
 if %opt%==1 goto check4updates
-if %opt%==2 goto reset
-if %opt%==3 goto menu
+if %opt%==2 goto tauserappupdates
+if %opt%==3 goto reset
+if %opt%==4 goto menu
 goto settings
 
 :reset
@@ -350,3 +377,47 @@ goto reload
 cd \Porti
 call Porti.bat
 exit
+
+:unziphashfailed
+echo Error: Unable to verify hash from unzip.exe
+echo Got: %unziphash%
+echo Expected: %comp%
+echo Do you want to proceed anyway? (y/n)
+echo Note: n will re-download unzip.exe and reperforms the Hash-Check
+set /p opt=Opt: 
+if %opt%==y goto setupcompt
+if %opt%==n goto unzipdownload
+goto unziphashfailed
+
+
+:askdownloader
+cls
+echo Unable to download WGET using Powershell!
+echo trying to download with bitsadmin (this will take ages btw)
+timeout 2 >NUL
+bitsadmin /transfer "WGET-Download" /PRIORITY HIGH "https://eternallybored.org/misc/wget/1.19.4/32/wget.exe" "%cd%\Porti\wget.exe"
+set didbitsdownload=1
+goto recheckhashwget
+
+:tauserappupdates
+echo CD: %cd%
+start  Porti\TauserUpdater.bat
+goto menu
+
+:missingfiles
+cls
+echo WARNING: Some Porti Files are missing. 
+echo Do you want to restart Setup to re-download them?
+echo Your data will not be deleted.
+echo 1) Setup
+echo 2) Continue anyway
+echo 3) Exit
+set /p opt=Opt: 
+if %opt%==1 goto setup
+if %opt%==2 goto setnochecksession
+if %opt%==3 exit
+goto missingfiles
+
+:setnochecksession
+set dontcheck=1
+goto menu
