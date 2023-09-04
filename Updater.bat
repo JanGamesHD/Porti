@@ -24,6 +24,8 @@ exit
 :downloadremotehash
 Porti\wget.exe https://raw.githubusercontent.com/JanGamesHD/Porti/main/portihash.sys -O Porti\remotehash.porti --no-cache
 echo Loading values (hashes) into memory...
+set localversion=UNKNOWN
+set remoteversion=UNKNOWN
 set /p localversion=<Porti\localporti.sys
 set /p remoteversion=<Porti\remotehash.porti
 if %localversion%==%remoteversion% goto latest
