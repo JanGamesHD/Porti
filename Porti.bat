@@ -1,8 +1,11 @@
 @echo off
-if exist \Porti\Porti.bat goto loadporti
+set version=1.5
+rem if exist \Porti\Porti.bat goto loadporti
+:boot
 :boot
 if not "%cd%"=="%cd: =%" goto spacewarning
 echo Github: https://github.com/JanGamesHD/Porti
+:reload
 :reload
 title Porti: Loading...
 set curcd=%cd%
@@ -14,13 +17,13 @@ if "%cd%"=="%acd%" set bananamode=1
 if %bananamode%==0 if exist wget.exe set portiworkdir=%cd%
 if %bananamode%==0 if exist Porti\wget.exe set portiworkdir=%cd%\Porti
 if %bananamode%==1 if exist wget.exe set portiworkdir=%cd%
-if %bananamode%==1 if exist Porti\wget.exe set portiworkdir=%cd%Porti
 if %bananamode%==1 set cd=%cd:\=%
 if %bananamode%==1 set curcd=%cd::\=:%
 if %bananamode%==1 set acd=%cd::\=:%
+if %bananamode%==1 if exist Porti\wget.exe set portiworkdir=%cd%\Porti
 echo bananamode: %bananamode%
 echo Welcome to Porti!
-echo Version 1.3
+echo Version %version%
 if not exist Porti md Porti
 if not exist Porti\Applications md Porti\Applications
 if not exist Porti\setupcomplete.sys goto setup
@@ -31,9 +34,13 @@ title Porti: Setup
 cls
 echo Welcome to Porti
 echo Your Porti Installation path is: %cd%
-echo If you want to change the installation path, move the Porti.bat file to the right locaiton.
+echo If you want to change the installation path, move the Porti.bat file to the right location.
 echo Please note that Porti uses the 3rd party software wget to download files.
-echo Do you want to continue installation? (y/n)
+echo Porti is licensed under the MIT license, however
+echo WGET is licensed under the GNU GENERAL PUBLIC LICENSE
+echo By proceeding, you agree to the licenses.
+echo GPL: https://www.gnu.org/licenses/gpl-3.0.txt (will automatically be downloaded into the Porti working directory)
+echo Do you want to continue with the installation? (y/n)
 set /p opt=Opt: 
 if %opt%==y goto install
 if %opt%==n exit
@@ -69,30 +76,30 @@ goto ask1
 title Porti: WGET Download Done!
 cls
 echo WGET has been downloaded correctly.
-pause
-cls
 echo We will now download the following:
 echo 1. Tauser Store
 echo 2. Tauser Store patcher
 echo 3. Porti Updater
-echo 4. unzip.exe
-pause
-cls
-title Porti: Downloading... (1/5)
-echo Downloading... (1/5)
+echo 4. Tauser Store Updater
+echo 5. GNU GENERAL PUBLIC LICENSE
+echo 6. unzip.exe
+title Porti: Downloading... (1/6)
+echo Downloading... (1/6)
 Porti\wget.exe https://raw.githubusercontent.com/FBW81C/TauserStore/main/Store.bat -O Porti\Store.bat -q
-title Porti: Downloading... (2/5)
-echo Downloading... (2/5)
+title Porti: Downloading... (2/6)
+echo Downloading... (2/6)
 Porti\wget.exe https://raw.githubusercontent.com/JanGamesHD/Porti/main/Store_loader.bat -O Porti\Store_loader.bat -q
-title Porti: Downloading... (3/5)
-echo Downloading... (3/5)
+title Porti: Downloading... (3/6)
+echo Downloading... (3/6)
 Porti\wget.exe https://raw.githubusercontent.com/JanGamesHD/Porti/main/Updater.bat -O Porti\Updater.bat -q
-title Porti: Downloading... (4/5)
-echo Downloading... (4/5)
+title Porti: Downloading... (4/6)
+echo Downloading... (4/6)
 Porti\wget.exe https://raw.githubusercontent.com/JanGamesHD/Porti/main/TauserUpdater.bat -O Porti\TauserUpdater.bat -q
+echo Downloading... (5/6)
+Porti\wget.exe https://www.gnu.org/licenses/gpl-3.0.txt -O Porti\wget_license.txt -q
 :unzipdownload
-echo Downloading... (5/5)
-title Porti: Downloading... (5/5)
+echo Downloading... (6/6)
+title Porti: Downloading... (6/6)
 Porti\wget.exe http://stahlworks.com/dev/unzip.exe -O Porti\unzip.exe -q
 echo Verifying hash...
 set comp=75375c22c72f1beb76bea39c22a1ed68
@@ -102,20 +109,23 @@ set unziphash=%unziphash: =%
 if not %unziphash%==%comp% goto unziphashfailed
 :setupcompt
 echo Done!
-pause
 :setupcomplete
 cls
 echo The setup is now completed.
 echo You can now use Porti.
-echo You can check for Updates in Porti Settings
-echo We will add automatic update checks in the future.
-pause
+echo.
+echo Porti will regularly ask you if you want to check for updates
+echo You can also check for updates manually in the Settings page
+echo.
+echo Press any key to start using Porti!
+pause >NUL
 :comepletsetup
 cls
 echo Completing setup... Please wait!
 echo a>Porti\setupcomplete.sys
 goto reload
 
+:continue1
 :continue1
 if not exist Porti\updatetimer.sys goto setupdatetimer
 set /p updatetimer=<Porti\updatetimer.sys
@@ -126,6 +136,8 @@ if not defined dontcheck if not exist Porti\TauserUpdater.bat goto missingfiles
 if not defined dontcheck if not exist Porti\Store.bat goto missingfiles
 if not defined dontcheck if not exist Porti\Store_loader.bat goto missingfiles
 if not defined dontcheck if not exist Porti\Updater.bat goto missingfiles
+if not defined dontcheck if not exist Porti\wget_license.txt goto missingfiles
+:menu
 :menu
 color e0
 cls
@@ -149,10 +161,12 @@ pause
 goto menu
 
 :myapps
+:myapps
 title Porti: In Progress...
 cls
 echo --- Application List ---
 set counter=1
+:conlisting
 :conlisting
 if not exist Porti\Applications\%counter%\name.sys goto donelisting
 set /p applicationname=<Porti\Applications\%counter%\name.sys
@@ -162,6 +176,7 @@ set /a counter=%counter%+1
 goto conlisting
 
 :donelisting
+:donelisting
 title Porti: Applications
 echo --- Application List ---
 echo ..) Back to Main Menu
@@ -170,6 +185,7 @@ echo Type the Application number and hit Enter to continue.
 set /p app=Opt: 
 if %app%==a goto installzip
 if %app%==.. goto menu
+:loadapplication
 :loadapplication
 echo Loading Details ... please wait!
 if not exist Porti\Applications\%app%\name.sys goto applicationnotfound
@@ -184,10 +200,11 @@ set /p opt=Opt:
 if %opt%==1 goto launchapp
 if %opt%==2 goto moredetails
 if %opt%==3 goto uninstall
-if %opt%==4 goto menu
+if %opt%==4 goto myapps
 goto loadapplication
 
 
+:launchapp
 :launchapp
 echo Loading exec...
 set appdir=Porti\Applications\%app%
@@ -196,11 +213,26 @@ start cmd /c "%exec%"
 goto menu
 
 :moredetails
+:moredetails
 cls
-echo Coming soon or never. i dont care O__O
+set appdir=Porti\Applications\%app%
+set /p exec=<Porti\Applications\%app%\exec.sys
+echo App-Dir: %appdir%
+echo Exec: %exec%
+echo App: %app%
+echo Application Name: %applicationname%
+if exist Porti\Applications\%app%\version.tauserstore set /p tauserver=<Porti\Applications\%app%\version.tauserstore
+if exist Porti\Applications\%app%\appid.tauserstore set /p tauserappid=<Porti\Applications\%app%\appid.tauserstore
+if exist Porti\Applications\%app%\version.tauserstore (
+echo TS-Version: %tauserver%
+echo TS-ID: %tauserappid%
+echo If you want to check for Updates:
+echo Porti Main Menu --^> Settings --^> Check for Tauser-Application Updates
+)
 pause
-goto loadapplocation
+goto loadapplication
 
+:uninstall
 :uninstall
 cls
 echo Are you sure you want to uninstall %applicationname%? (y/n)
@@ -209,6 +241,7 @@ if %opt%==y goto confirmuninstall
 if %opt%==n goto loadapplication
 goto uninstall
 
+:confirmuninstall
 :confirmuninstall
 cls
 echo %time%: Started uninstallation for %applicationname%...
@@ -222,6 +255,7 @@ echo Current Application ID: %app%
 set curapp=%app%
 set curapp2=%app%
 :moveloop
+:moveloop
 set curapp2=%curapp%
 set /a curapp=%curapp%+1
 if not exist Porti\Applications\%curapp% goto movedone
@@ -229,21 +263,25 @@ if exist Porti\Applications\%curapp% ren Porti\Applications\%curapp% %curapp2%
 echo Moved Application with ID %curapp% to %curapp2%
 goto moveloop
 :movedone
+:movedone
 echo Complete!
 paue
 goto menu
 
+:tauserstore
 :tauserstore
 cls
 start Porti\Store_loader.bat
 goto menu
 
 :applicationnotfound
+:applicationnotfound
 cls
 echo The selected application does not exist or contains no name information.
 pause
 goto menu
 
+:settings
 :settings
 title Porti: Settings
 cls
@@ -293,15 +331,19 @@ if not exist %file% goto notfoundfileforinstall
 echo Searching for an empty Application space...
 set current=0
 :searchappspace
+:searchappspace
 set /a current=%current%+1
 if not exist Porti\Applications\%current% goto foundemptyspace
 goto searchappspace
 
 :foundemptyspace
+:foundemptyspace
 cls
 echo Found empty application space: %current%
 echo Extracting ZIP Package ...
+if exist "%portiworkdir%\unzip.exe" goto useunzipforadd
 powershell Expand-Archive %file% -DestinationPath "%portiworkdir%\Applications\%current%"
+:afterzipunzip
 echo Looking for required files...
 if not exist "%portiworkdir%\Applications\%current%\exec.sys" goto notfoundadd
 if not exist "%portiworkdir%\Applications\%current%\name.sys" goto notfoundadd
@@ -311,12 +353,22 @@ pause
 goto menu
 
 :notfoundadd
-cls
+:notfoundadd
+rem cls
 echo Unable to locate files.
 echo Required files are:
 echo - "%portiworkdir%\Applications\%current%\exec.sys"
 echo - "%portiworkdir%\Applications\%current%\name.sys"
-pause
+echo Please select an option.
+echo 1) Ignore
+echo 2) Delete application
+set /p opt=Opt. 
+if %opt%==1 goto menu
+if %opt%==2 goto deloldapp
+goto notfoundadd
+
+:deloldapp
+:deloldapp
 echo Removing Application...
 del "%portiworkdir%\Applications\%current%\*" /Q /S /F
 rd "%portiworkdir%\Applications\%current%" /Q /S
@@ -325,9 +377,13 @@ pause
 goto menu
 
 :setupdatetimer
+
+:setupdatetimer
+:resetupdater
 echo 14 >Porti\updatetimer.sys
 goto continue1
 
+:askifcheck4updates
 :askifcheck4updates
 title Porti: Check for Updates
 cls
@@ -339,15 +395,19 @@ if %opt%==n goto setupdatetimer
 goto askifcheck4updates
 
 :getportitext
+:getportitext
 title Porti: Downloading Porti Text
 cls
 echo Downloading Porti Text...
-Porti\wget https://raw.githubusercontent.com/JanGamesHD/Porti/main/portitext.sys -O Porti\portitext.sys
+Porti\wget https://raw.githubusercontent.com/JanGamesHD/Porti/main/portitext.sys -O Porti\portitext.sys -q
 goto menu
 
 :notinstallfound
 :zipfilenotfound
 :notfoundfileforinstall
+:notfoundfileforinstall
+:zipfilenotfound
+:notinstallfound
 cls
 echo Unable to find file: %file%
 echo Please use drag and Drop to make sure the right path has been entered.
@@ -357,9 +417,11 @@ pause
 goto menu
 
 :spacewarning
+:spacewarning
 cls
 echo Porti is installed in a directory which contains spaces.
 echo Please move Porti into a different location which does not contain any spaces.
+echo Current Porti Location: %cd%
 echo We can automatically install Porti in \Porti
 echo Do you want to install Porti in \Porti? (y/n)
 set /p opt=Opt: 
@@ -368,16 +430,19 @@ if %opt%==n exit
 goto spacewarning
 
 :installinroot
+:installinroot
 md \Porti
 copy "%~f0" \Porti\Porti.bat
 if not exist \Porti\Porti.bat goto error1
-goto reload
+goto rootinstallcompleted
 
+:loadporti
 :loadporti
 cd \Porti
 call Porti.bat
 exit
 
+:unziphashfailed
 :unziphashfailed
 echo Error: Unable to verify hash from unzip.exe
 echo Got: %unziphash%
@@ -391,6 +456,7 @@ goto unziphashfailed
 
 
 :askdownloader
+:askdownloader
 cls
 echo Unable to download WGET using Powershell!
 echo trying to download with bitsadmin (this will take ages btw)
@@ -400,14 +466,18 @@ set didbitsdownload=1
 goto recheckhashwget
 
 :tauserappupdates
+:tauserappupdates
 echo CD: %cd%
 start  Porti\TauserUpdater.bat
 goto menu
 
 :missingfiles
+:missingfiles
 cls
-echo WARNING: Some Porti Files are missing. 
-echo Do you want to restart Setup to re-download them?
+echo Files missing!
+echo Some Porti files are missing.
+echo Note: This is normal if you´ve just installed an Update for Porti
+echo Please select 1 to re-enter Setup to re-download the missing files.
 echo Your data will not be deleted.
 echo 1) Setup
 echo 2) Continue anyway
@@ -419,5 +489,43 @@ if %opt%==3 exit
 goto missingfiles
 
 :setnochecksession
+:setnochecksession
 set dontcheck=1
 goto menu
+
+:rootinstallcompleted
+:rootinstallcompleted
+cls
+echo Porti is now installed in \Porti
+echo From now on you need to start Porti from \Porti\Porti.bat
+explorer \Porti
+pause
+exit
+
+:error1
+:error1
+cls
+echo Unable to install Porti in \Porti
+echo Move the Porti.bat file to a different location without spaces and then try again.
+pause
+exit
+
+:useunzipforadd
+:useunzipforadd
+echo Preparation In Progress...
+echo CURRENT CD: %cd%
+echo WORKDIR: %portiworkdir%
+echo CURRENT: %current%
+md "%portiworkdir%\Applications\%current%"
+rem powershell Expand-Archive %file% -DestinationPath "%portiworkdir%\Applications\%current%"
+md PortiTemp
+cd PortiTemp
+"%portiworkdir%\unzip.exe" %file%
+echo Installation In Progress... (Moving Directorys)
+for /D %%a in (*) do move %%a "%portiworkdir%\Applications\%current%\"
+echo Installation In Progress... (Moving Files)
+move * "%portiworkdir%\Applications\%current%\"
+echo Removing Directory...
+cd ..
+rd PortiTemp /Q /S
+goto afterzipunzip
